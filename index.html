@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic HTML Structure</title>
+    <link rel="stylesheet" href="style .css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>fakestoreapi</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">Order now</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="card" id="card">
+        
+    </div><br><br><br>
+    
+    <section id="home" class="hero">
+        <form id="postForm" class="postForm">
+            <input type="url" id="image" placeholder="Image URL" required><br><br>
+            <input type="text" id="title" placeholder="Title" required><br><br>
+            <input type="number" id="price" placeholder="Price" required><br><br>
+            <textarea id="description" placeholder="Description" required></textarea><br><br>
+            
+            <button type="submit" id="submit">Post</button>
+        </form>
+    </section>
+    
+
+
+     
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 abd. All rights reserved</p>
+        </div>
+    </footer>
+   
+
+    <script src="app.js"></script>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+// If you enabled Analytics in your project, add the Firebase SDK for Google Analytics
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+// Add Firebase products that you want to use
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import { getDatabase, ref, push,set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyA7nhRdFBYIi3A5qNR0vpY6k2M4S7tVI5M",
+          authDomain: "tow-data-1588d.firebaseapp.com",
+          projectId: "tow-data-1588d",
+          storageBucket: "tow-data-1588d.appspot.com",
+          messagingSenderId: "822269433919",
+          appId: "1:822269433919:web:9e37f20203ef36ab70408a",
+        databaseURL: "https://tow-data-1588d-default-rtdb.europe-west1.firebasedatabase.app/"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        // const dbRef = ref(database, 'posts');
+
+        
+
+        document.getElementById("submit").addEventListener('click', function(e) {
+    e.preventDefault();
+
+    const image = document.getElementById("image").value;
+    const title = document.getElementById("title").value;
+    const price = document.getElementById("price").value;
+    const description = document.getElementById("description").value;
+
+    // استخدم push لإضافة بيانات جديدة
+    const newPostRef = push(ref(db, 'posts'));
+    set(newPostRef, {
+        image: image,
+        title: title,
+        price: price,
+        description: description
+    }).then(() => {
+        alert("data add success");
+        
+    }).catch((error) => {
+        console.error("Error adding document: ", error);
+    });
+
+    // function finddata(){
+    //     const dbref = ref(db);
+    //     get(child(dbref,'posts'))
+    //     .then((snapshot) =>{
+    //         if(snapshot.exists()){
+    //             image.innerHTML = "imge" + snapshot.val().image;
+    //             title.innerHTML = "title" + snapshot.val().title;
+
+                
+    //         }else{
+    //             alert("no data found");
+    //         }
+    //     })
+    //     .catch((error) => {
+    //         console.error("Error adding document: ", error);
+
+    //     })
+
+    // } 
+    function displayPosts() {
+        onValue(dbRef, (snapshot) => {
+                const data = snapshot.val();
+                const cardContainer = document.getElementById("card-container");
+                cardContainer.innerHTML = ''; // مسح المحتوى السابق
+
+                for (let key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const post = data[key];
+                        const card = document.createElement("div");
+                        card.classList.add("card");
+
+                        card.innerHTML = `
+                            <img src="${post.image}" alt="${post.title}">
+                            <h2>${post.title}</h2>
+                            <p>${post.description}</p>
+                            <p>Price: ${post.price}</p>
+                        `;
+
+                        cardContainer.appendChild(card);
+                    }
+                }
+            });
+        }
+
+        // عرض البطاقات عند تحميل الصفحة
+        displayPosts()
+    // function displayPosts() {
+    //          onValue(dbRef, (snapshot) => {
+    //              const data = snapshot.val();
+    //              const cardContainer = document.getElementById("card-container");
+    //              cardContainer.innerHTML = ''; // مسح المحتوى السابق
+ 
+    //              for (let key in data) {
+    //                  if (data.hasOwnProperty(key)) {
+    //                      const post = data[key];
+    //                      const card = document.createElement("div");
+    //                      card.classList.add("card");
+ 
+    //                      card.innerHTML = `
+    //                          <img src="${post.image}" alt="${post.title}">
+    //                          <h2>${post.title}</h2>
+    //                          <p>${post.description}</p>
+    //                          <p>Price: ${post.price}</p>
+    //                      `;
+ 
+    //                      cardContainer.appendChild(card);
+    //                  }
+    //              }
+    //          });
+    //      }
+ 
+    //      function finddata() {
+    //          const dbRef = ref(db, 'posts');
+    //          get(child(dbRef, ''))
+    //          .then((snapshot) => {
+    //              if (snapshot.exists()) {
+    //                  const data = snapshot.val();
+    //                  const findimage = document.getElementById("findimage");
+    //                  const findtitle = document.getElementById("findtitle");
+ 
+    //                  findimage.innerHTML = '';
+    //                  findtitle.innerHTML = '';
+ 
+    //                  for (const key in data) {
+    //                      if (data.hasOwnProperty(key)) {
+    //                          findimage.innerHTML += "Image: " + data[key].image + "<br>";
+    //                          findtitle.innerHTML += "Title: " + data[key].title + "<br>";
+    //                      }
+    //                  }
+    //              } else {
+    //                  alert("No data found");
+    //              }
+    //          })
+    //          .catch((error) => {
+    //              console.error("Error fetching data: ", error);
+    //          });
+    //      }
+ 
+    //      // عرض البطاقات عند تحميل الصفحة
+    //      displayPosts();
+    //      // استدعاء الدالة لاختبارها
+    //      finddata();
+});
+
+
+
+             
+            
+
+
+        
+      </script>
+</body>
+</html>
+
+
+   
+ 
